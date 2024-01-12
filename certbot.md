@@ -6,7 +6,7 @@ This setup means a device can have a valid SSL certificate and still be inaccess
 
 This is a partial set of instructions to get valid SSL certificates via Let's Encrypt via certbot. It doesn't include autorenew. I did this on Rocky Linux but other instructions exist for [other platforms.](https://snapcraft.io/docs/installing-snapd)
 
-These instructions follow [RFC 8555#section-8.4](https://datatracker.ietf.org/doc/html/rfc8555#section-8.4) -> **DNS Challenge**.(https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins)
+These instructions follow [RFC 8555#section-8.4](https://datatracker.ietf.org/doc/html/rfc8555#section-8.4) -> **DNS Challenge**.
 
 I'm using cloudflare with a domain I own, but there is a good sized list of [supported DNS plugins](https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins).
 
