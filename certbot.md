@@ -1,8 +1,16 @@
 # Rocky Linux, Certbot, Let's Encrypt, DNS and Snap
 
-This is a partial set of instructions to get valid SSL certificates via Let's Encrypt. It doesn't include autorenew.
+This setup means a device can have a valid SSL certificate and still be inaccessible from the Internet, so `https://host.example.com` works internally without SSL warnings.
 
-These instructions follow [RFC 8555#section-8.4](https://datatracker.ietf.org/doc/html/rfc8555#section-8.4) -> **DNS Challenge**
+[Let's Encrypt](https://letsencrypt.org/about/) is a [Certificate Authority](https://en.wikipedia.org/wiki/Certificate_authority#Providers) provided by the non-profit [Internet Security Research Group](https://www.abetterinternet.org/) as a free service.
+
+This is a partial set of instructions to get valid SSL certificates via Let's Encrypt via certbot. It doesn't include autorenew. I did this on Rocky Linux but other instructions exist for [other platforms.](https://snapcraft.io/docs/installing-snapd)
+
+These instructions follow [RFC 8555#section-8.4](https://datatracker.ietf.org/doc/html/rfc8555#section-8.4) -> **DNS Challenge**.(https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins)
+
+I'm using cloudflare with a domain I own, but there is a good sized list of [supported DNS plugins](https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins).
+
+
 
 ## Instructions
 1. Remove the older certbot
@@ -70,7 +78,7 @@ These instructions follow [RFC 8555#section-8.4](https://datatracker.ietf.org/do
    sudo certbot certonly \
      --dns-cloudflare \
      --dns-cloudflare-credentials /opt/certbot/cloudflare.key \
-     -d host.domain.com
+     -d host.example.com
    ```
 
 1. Move `cloudflare.key` into the new `/etc/letsencrypt/` directory.
