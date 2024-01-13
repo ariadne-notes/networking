@@ -20,7 +20,7 @@ Valerie:
 
 **Only do this with the VM off**
 
-These instructions activate the find an unused loop device, activate the LV, and mount the necessary partition.
+These instructions find an unused loop device, activate the LV, and mount the necessary partition.
 
 1. Make a new mount point
    
@@ -30,7 +30,9 @@ These instructions activate the find an unused loop device, activate the LV, and
    
    `sudo lvs`
 
-1. Display the LV disk status, format is `/dev/VG-or-virtual-group/LV-or-logical-volume`
+1. Display the LV disk status
+
+   format is `/dev/VG-or-virtual-group/LV-or-logical-volume`
    
    `sudo lvdisplay /dev/pve/vm-100-disk-0`
 
@@ -42,7 +44,7 @@ These instructions activate the find an unused loop device, activate the LV, and
    
 1. Enumerate the first unused loop device
    
-   `losetup -f`
+   `sudo losetup -f`
 
 1. Attach the partitions from the LV onto the loop device, making block devices
    
@@ -52,7 +54,7 @@ These instructions activate the find an unused loop device, activate the LV, and
    
 1. Enumerate the new block devices
    
-   `lsblk /dev/loopN`
+   `sudo lsblk /dev/loopN`
    
 1. Mount the new loop-block device
    
