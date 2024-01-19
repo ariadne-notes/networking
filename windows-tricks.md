@@ -5,3 +5,7 @@
 ##### Turn on Hyper-V
 
 `bcdedit /set hypervisorlaunchtype auto`
+
+##### Turn off hibernation file
+
+`powercfg -h off`

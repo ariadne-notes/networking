@@ -1,0 +1,1 @@
+[Cisco - VPC Best Practices Design Guide](https://www.cisco.com/c/dam/en/us/td/docs/switches/datacenter/sw/design/vpc_design/vpc_best_practices_design_guide.pdf)
