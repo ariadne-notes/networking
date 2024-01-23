@@ -8,7 +8,7 @@ I bought a used i7 Windows 10 machine with a 512 GB NVMe drive. On the outside a
 
 The current OS boots and the copy of Office works.
 
-**Goal: To have this new proxmox node, virtualize it's old OS.** 
+**Goal:** I want to keep this install of Windows 10 working, and copy the OS into Proxmox. I want to virtualize this OS.
 
 This will give me a working licensed copy of Office.
 
@@ -27,9 +27,9 @@ A lot of this is to enable a clean "recovery" of the OS once it's copied over. M
 * [FAT32](https://en.wikipedia.org/wiki/File_Allocation_Table#FAT32)
 * [NTFS](https://en.wikipedia.org/wiki/NTFS) - This filesystem should really only be checked using Microsoft's own tools.
 * **BCD -** Boot Configuraiton Data
-* GPT
-* EFI
-* MSR
+* [GPT](https://en.wikipedia.org/wiki/GUID_Partition_Table)
+* [EFI](https://en.wikipedia.org/wiki/EFI_system_partition)
+* [MSR](https://en.wikipedia.org/wiki/Microsoft_Reserved_Partition)
 
 ## Dataloss
 **These tools cause dataloss.**
@@ -52,7 +52,7 @@ I wanted to go from a larger drive (512GB) to a smaller drive (64GB). That meant
 
 ## Download ISOs
 
-Most of the time will be spent inside of recovery OSes, working with unmounted filesystems.
+Most of the time was spent inside of recovery OSes, working with unmounted filesystems.
 
 [SystemRescue](https://www.system-rescue.org/) - Linux recovery media with NTFS support.
 
