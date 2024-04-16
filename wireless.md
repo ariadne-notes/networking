@@ -87,7 +87,98 @@ Modulation can only do a few things to a carrier signal to include data
 
 `*` 802.11ax is designed to work on any band from 1 to 7 GHz, provided that the band is approved for use.
 
+# AP States
 
+**AP boot:** The AP starts a bootloader OS. It starts DHCP, both to get it's own address and the address of the controller to download the config and OS image. 
 
+**WLC discovery:** The AP looks for a WLC.
 
- 
+**CAPWAP tunnel:** The AP builds a CAPWAP tunnel to a WLC after exchanging certificates. Traffic is DTLS (Datagram Transport Layer Security).
+
+**WLC join:** The AP selects a WLC from a list of candidates and then sends a CAPWAP Join Request message to it. The WLC replies with a CAPWAP Join Response message. The next section explains how an AP selects a WLC to join.
+
+**Download image:** The WLC informs the AP of its software release. If the AP’s own software is a different release, the AP downloads a matching image from the controller, reboots to apply the new image, and then returns to step 1. If the two are running identical releases, no download is needed.
+
+**Download config:** The AP pulls configuration parameters down from the WLC and can update existing values with those sent from the controller. Settings include RF, service set identifier (SSID), security, and quality of service (QoS) parameters.
+
+**Run:** Once the AP is fully initialized, the WLC places it in the “run” state. The AP and WLC then begin providing a BSS and begin accepting wireless clients.
+
+**Reset:** If an AP is reset by the WLC, it tears down existing client associations and any CAPWAP tunnels to WLCs. The AP then reboots and starts through the entire state machine again.
+
+## WLC Discovery
+
+#### (IOS Config)
+
+When APs boot, they will send a request to the controller IP, or if they don't have one, will broadcast a request to port 5246. Here is a config to forward the request to one or more IPs.
+
+```
+router(config)# ip forward-protocol udp 5246
+router(config)# interface vlan <number>
+router(config-int)# ip helper-address WLC1-MGMT-ADDR
+router(config-int)# ip helper-address WLC2-MGMT-ADDR
+```
+
+#### Priming
+The APs themselves keep lists of known controllers
+
+#### DHCP
+Option 43 can contain a controller address.
+
+#### DNScisco-capwap-controller
+The AP does an A record lookup for
+`cisco-capwap-controller.local-domain`
+To get an address.
+
+## WLC Joining
+1. Previously configured
+1. Discovery
+1. Least loaded WLC (the controllers report on their load)
+
+## AP Priority
+A WLC can only support so many APs. APs have priority like low, medium, high, and critical. The default is low.
+The WLC will disconnect a lower priority AP for a higher priority AP.
+
+## WLC keepalive
+APs send heartbeat messages every 30 seconds to WLCs to make sure they are alive. The WLC must respond. If the WLC doesn't respond the AP sends 4 more keepalives at 3 second intervals.
+
+APs can detect WLC failures in about 35 seconds.
+
+## High Availability (HA)
+WLCs can be configured to do statefull switchover (SSO) with an active and hot-standby. There isn't a need to configure a secondary WLC then.
+Failures are transparent with HA.
+
+## Cisco AP Modes
+
+### Cisco AP Operational Modes
+
+**Local**: Operates in default lightweight mode with active BSSs on a designated channel. Scans other channels for noise, interference, rogue device detection, and IDS event matching when not transmitting.
+
+**Monitor**: Functions as a dedicated sensor without transmitting. It enables receiver only to check IDS events, detect rogue APs, and support location-based services by determining station positions.
+
+**FlexConnect**: Allows an AP at a remote site to locally switch traffic between an SSID and a VLAN during CAPWAP tunnel outages, given prior configuration.
+
+**Sniffer**: Dedicates its radios to capture 802.11 traffic for analysis. Captured data is forwarded to network analysis software like LiveAction Omnipeek or Wireshark.
+
+**Rogue Detector**: Focuses on identifying rogue devices by correlating MAC addresses observed on both wired and wireless networks.
+
+**Bridge**: Serves as a dedicated bridge (either point-to-point or point-to-multipoint) to connect networks. Utilized for linking distant locations or forming mesh networks.
+
+**Flex+Bridge**: Combines FlexConnect with bridge capabilities in a mesh AP configuration.
+
+**SE-Connect**: The AP dedicates its radios to perform spectrum analysis across all wireless channels. Allows for remote connection of a PC running analysis software like MetaGeek Chanalyzer or Cisco Spectrum Expert. This setup is used to collect and analyze spectrum data to identify sources of interference.
+
+## Radiation Patterns
+
+**H Plane** - Horizontal, or XY, or Azimuth. The top-down view, like in a video game.
+
+**E Plane** - Elevation, or XZ. The side view on a 2D video game.
+
+**Omnidirectional** - +4dBi, a donut.
+
+**Directional** - +12dBi, a spear, also called a lobe.
+
+**Beamwidth** - Looking at the radiation pattern, how much it can spread before being halfed. A 30 degree beam is 0dBm on axis, and -3dBm 15% off axis.
+
+## Polarization
+
+A vertical antenna sends vertically polarized signals, with the electrical field going up and down. It works best when recieved on another vertically polarized antenna.
