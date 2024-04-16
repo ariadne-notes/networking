@@ -1,4 +1,10 @@
-# Terms
+# Modulation
+Modulation can only do a few things to a carrier signal to include data
+* Frequency (a tiny bit faster or slower)
+* Phase (changing the start and stop intervals)
+* Amplitude (signal strength)
+
+# Wireless Terms
 
 * **dBi** - An *isotropic* antenna. Basically, a single point in space, mathematically perfect.
 
@@ -68,8 +74,9 @@
 
 
 
-#### Table 17-4 from the ENCOR 350-401 text
+# Table 17-4 from the ENCOR 350-401 text
 
+| Standard | 2.4Ghz?  | 5ghz?  | Data Rates Supported                                | Channel Width Supported       |
 |----------|----------|--------|-----------------------------------------------------|-------------------------------|
 | 802.11b  | Yes      | No     | 1, 2, 5.5, and 11 Mbps                              | 22 MHz                        |
 | 802.11g  | Yes      | No     | 6, 9, 12, 18, 24, 36, 48, and 54 Mbps               | 22 MHz                        |
@@ -78,13 +85,9 @@
 | 802.11ac | No       | Yes    | Up to 866 Mbps per spatial stream, up to 4 spatial streams | 20, 40, 80, or 160 MHz |
 | 802.11ax | Yes*     | Yes*   | Up to 1.2 Gbps per spatial stream, up to 8 spatial streams | 20, 40, 80, or 160 MHz |
 
-* 802.11ax is designed to work on any band from 1 to 7 GHz, provided that the band is approved for use.
+`*` 802.11ax is designed to work on any band from 1 to 7 GHz, provided that the band is approved for use.
 
-#### Modulation
-Modulation can only do a few things to a carrier signal to include data
-* Frequency (a tiny bit faster or slower)
-* Phase (changing the start and stop intervals)
-* Amplitude (signal strength)
+
 
 
  
