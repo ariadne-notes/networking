@@ -31,9 +31,54 @@
 * **QAM** - Quadrature Amplitude Modulation.
 
 * **802.11** - The wireless standard from 1997.
- 
 
- 
+* **802.11n** -- 2009, it brought the HT.
+
+* **HT** -- High Throughput
+
+* **802.11ac** -- 2013, VHT. Lots to configure, about 320 different data-rates.
+
+* **VHT** - Very High Throughput.
+
+* **802.11ax** -- WiFi 6. High-effiency wireless. Multiple devices can transmit at the same time. Uses OFDMA.
+
+* **SISO** - Single In, Single Out. One radio.
+
+* **MIMO** - Multiple In, Multiple Out. Multiple Radios.
+
+* **Radio Chain** - A pathway to either send or recieve a signal. A MIMO device has multiple radio chains.
+
+2x2, 2 Tx, 2 Rx
+
+2x3, 2 Tx, 3 Rx
+
+* **Spatial Multiplexing** - Uses digital signal processing to demodulate a signal recieved on multiple radio chains. Each radio chain will hear a different signal and the known phase difference can be demodulated.
+
+3x3:2, 3 Tx, 3 Rx, 2 Spatial Streams
+
+* **Transmit Beamforming** - Knowing a signal will arrive out-of-phase if sent on multiple antennas to the same reciever, a MIMO device can intentionally send a signal on multiple radio chains, out of phase, so when it arrives the composite signal is construcitvely in-phase.
+
+* **TxBF** - Transmit Beamforming. The feedback sent from the reciever to the transmitter on how to better phase-shift the transmission.
+
+* **MRC** - Maximal Ratio Combining - Combining copies of signals on multiple antennas to get better SNR.
+
+* **DRS** - Dynamic Rate Shifting. The both stations agree ahead of time on how to speed up or slow down their datarate based on the changing RF environment. Also known as link adaptation, adaptive modulation and coding, rate adaptation.
+
+* **AMC** - Adaptive Modulation and Coding, the same as DRS.
+
+
+
+#### Table 17-4 from the ENCOR 350-401 text
+
+|----------|----------|--------|-----------------------------------------------------|-------------------------------|
+| 802.11b  | Yes      | No     | 1, 2, 5.5, and 11 Mbps                              | 22 MHz                        |
+| 802.11g  | Yes      | No     | 6, 9, 12, 18, 24, 36, 48, and 54 Mbps               | 22 MHz                        |
+| 802.11a  | No       | Yes    | 6, 9, 12, 18, 24, 36, 48, and 54 Mbps               | 20 MHz                        |
+| 802.11n  | Yes      | Yes    | Up to 150 Mbps* per spatial stream, up to 4 spatial streams | 20 or 40 MHz          |
+| 802.11ac | No       | Yes    | Up to 866 Mbps per spatial stream, up to 4 spatial streams | 20, 40, 80, or 160 MHz |
+| 802.11ax | Yes*     | Yes*   | Up to 1.2 Gbps per spatial stream, up to 8 spatial streams | 20, 40, 80, or 160 MHz |
+
+* 802.11ax is designed to work on any band from 1 to 7 GHz, provided that the band is approved for use.
 
 #### Modulation
 Modulation can only do a few things to a carrier signal to include data
