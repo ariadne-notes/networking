@@ -218,7 +218,7 @@ Layer3 - Local-to-Foreign - The client has an anchor controller (where it starte
 
 #### Mobility Groups
 
-Mobility groups speed up client roaming, by caching credentials. Clients can roam between mobility groups, but must re-authenticate.
+Mobility groups speed up client roaming, by caching credentials.
 
 ## Locating Devices
 
