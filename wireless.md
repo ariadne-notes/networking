@@ -6,9 +6,15 @@ Modulation can only do a few things to a carrier signal to include data
 
 # Wireless Terms
 
+* **BSS** - Basic Service Set. A wireless network segment, a star network with the AP as the center. The hosts cannot talk directly to each other.
+
+* **Association Request** - Joining an AP.
+
+* **Reassociation Requests** - Roaming from one AP to another.
+
 * **dBi** - An *isotropic* antenna. Basically, a single point in space, mathematically perfect.
 
-* **EIRP** - effective isotropic radiated power.
+* **EIRP** - effective isotropic radiated power. Also used by regulatory agencies.
 
 * **Link Budget** - How much power is needed in total to go from sending a message to being understood.
 
@@ -182,3 +188,45 @@ Failures are transparent with HA.
 ## Polarization
 
 A vertical antenna sends vertically polarized signals, with the electrical field going up and down. It works best when recieved on another vertically polarized antenna.
+
+## Roaming
+
+#### Autonomous
+The APs keep track of what clients are connected.
+
+#### Intracontroller
+A client goes from AP-to-AP but those APs are on the same controller.
+
+
+10ms - The controller handles the roaming process.
+
+#### Client Authentication
+If the controller needs to perform 802.1x on each client, this process should be streamlined to prevent long roam times.
+* **CCKM** - Cisco Centralized Key Management. One controller maintains a database of clients and keys on behalf of APs and provides them to other clients and APs during client roams. Clients need to support CCX (Cisco Compatible Extensions)
+
+* **Key Caching** - The client keeps keys for eight APs, and the destination AP must be in this list.
+
+* **802.11r** - Fast roaming or fast BSS transition. The client caches a portion of the authentication server's key, presenting that to future APs. The client can also cache it's QoS parameters.
+
+Each of these strategies requires the client to support it. (supplicant or driver software)
+
+#### Intercontroller 
+
+Layer2 - 20ms - Local-to-Local - Two controllers need to agree to also move the client's IP address from one controller to another. Fast, because both controllers are on the same vlan, and the client keeps it's address.
+
+Layer3 - Local-to-Foreign - The client has an anchor controller (where it started) and a foreign controller (for the BSS it's actually on), if they aren't on the same subnet, the controllers build a CAPWAP tunnle between them, so the client's data appears on the correct subnet. Uses two CAPWAP tunnels.
+
+#### Mobility Groups
+
+Mobility groups speed up client roaming, by caching credentials. Clients can roam between mobility groups, but must re-authenticate.
+
+## Locating Devices
+
+* **RTLS** - Real Time Location Services
+
+#### Probe Requests
+Wifi devices don't need to authenticate to send probe requests. They just need to be turned on. Even RFID tags can send probe requests.
+
+
+
+
