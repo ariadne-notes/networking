@@ -1,7 +1,5 @@
 This setup enables Let's Encrypt SSL certificates without exposing the lab box to internet traffic, or needing to open port 80.
 
-The license for this file is MIT, it can be merged into the official documentation.
-
 These instructions will automate certificate renewal and there is verification at the bottom.
 
 I used cloudflare, but it should work with other services.
@@ -109,3 +107,6 @@ sed -i --follow-symlinks /etc/apache2/sites-enabled/eveng-ssl.conf -Ee 's,(\s+SS
 [Read The Docs - Certbot - DNS Plugins](https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins)
 
 [Enable SSL EVE Pro with Let's Encrypt](https://www.eve-ng.net/index.php/documentation/howtos/howto-enable-ssl-eve-pro-with-lets-encrypt/)
+
+# For EVE-NG Maintainers
+These instructions can be tested then copied and merged into the documentation without attribution.
