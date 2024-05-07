@@ -76,29 +76,27 @@ I used cloudflare, but it should work with other services.
  
 1. Stop Apache
 
-`systemctl stop apache2`
+   `systemctl stop apache2`
 
 1. Update Apache to use the new certs
 
-```
-CERT=$(find /etc/letsencrypt/live/ -name fullchain*)
-KEY=$(find /etc/letsencrypt/live/ -name priv*)
+   ```
+   CERT=$(find /etc/letsencrypt/live/ -name fullchain*)
+   KEY=$(find /etc/letsencrypt/live/ -name priv*)
 
-sed -i --follow-symlinks /etc/apache2/sites-enabled/eveng-ssl.conf -Ee 's,(\s+SSLCertificateFile\s+).+,\1'$CERT',g'
-sed -i --follow-symlinks /etc/apache2/sites-enabled/eveng-ssl.conf -Ee 's,(\s+SSLCertificateKeyFile\s+).+,\1'$KEY',g'
-```
+   sed -i --follow-symlinks /etc/apache2/sites-enabled/eveng-ssl.conf -Ee 's,(\s+SSLCertificateFile\s+).+,\1'$CERT',g'
+   sed -i --follow-symlinks /etc/apache2/sites-enabled/eveng-ssl.conf -Ee 's,(\s+SSLCertificateKeyFile\s+).+,\1'$KEY',g'
+   ```
 
 1. Restart Apache2
 
-`systemctl start apache2`
+   `systemctl start apache2`
 
 1. Test
 
 1. Verify Certbot has installed the renewal service
 
    `systemctl list-timers | grep certbot`
-
-
 
 # References
 
