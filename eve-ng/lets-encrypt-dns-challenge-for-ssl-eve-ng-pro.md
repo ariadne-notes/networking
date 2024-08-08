@@ -70,7 +70,7 @@ I used cloudflare, but it should work with other services.
    ```
    sudo certbot certonly \
      --dns-cloudflare \
-     --dns-cloudflare-credentials /opt/certbot/cloudflare.key \
+     --dns-cloudflare-credentials /etc/certbot/cloudflare.key \
      -d host.example.com
    ```
  
