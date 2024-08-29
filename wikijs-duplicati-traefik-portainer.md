@@ -4,7 +4,7 @@
 #
 
 #
-# This is a VM (grove) that hosts portainer. These are services started by docker compose
+# This is a VM that hosts portainer. These are services started by docker compose.
 #
 # sudo docker comopose up -d
 # sudo docker compose down
