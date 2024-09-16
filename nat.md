@@ -35,14 +35,14 @@ Based on a diagram [here.](https://www.cisco.com/c/en/us/support/docs/ip/network
 </pre>           
 
 ### hostname R1
-
+<pre>
 interface Ethernet0/0
  ip address 192.168.1.1 255.255.255.0
 
 ip route 0.0.0.0 0.0.0.0 192.168.1.2
-
+</pre>
 ### hostname R2
-
+<pre>
 interface Ethernet0/0
  ip address 192.168.1.2 255.255.255.0
  ip nat inside
@@ -55,9 +55,9 @@ ip nat inside source list 1 interface Ethernet0/1 overload
 
 ip access-list standard 1
  10 permit 192.168.1.0 0.0.0.255
-
+</pre>
 ### hostname R3
-
+<pre>
 interface Ethernet0/1
  ip address 10.0.0.3 255.255.255.0
 
@@ -75,3 +75,4 @@ IP NAT debugging is on for access list 1
 R2# show ip nat translations
 Pro Inside global      Inside local       Outside local      Outside global
 icmp 10.0.0.2:1024     192.168.1.1:5      10.0.0.3:5         10.0.0.3:1024
+</pre>
