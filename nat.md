@@ -1,6 +1,6 @@
-SA = Source Address
+* **SA** - Source Address
 
-DA = Destination Adress
+* **DA** - Destination Adress
 
 ```
                       INSIDE NETWORK                                   OUTSIDE NETWORK
@@ -34,14 +34,14 @@ Based on a diagram [here.](https://www.cisco.com/c/en/us/support/docs/ip/network
            Inside ─────────┘    └─────── Outside        
 </pre>           
 
-### hostname R1
+### R1
 <pre>
 interface Ethernet0/0
  ip address 192.168.1.1 255.255.255.0
 
 ip route 0.0.0.0 0.0.0.0 192.168.1.2
 </pre>
-### hostname R2
+### R2
 <pre>
 interface Ethernet0/0
  ip address 192.168.1.2 255.255.255.0
@@ -56,13 +56,15 @@ ip nat inside source list 1 interface Ethernet0/1 overload
 ip access-list standard 1
  10 permit 192.168.1.0 0.0.0.255
 </pre>
-### hostname R3
+### R3
 <pre>
 interface Ethernet0/1
  ip address 10.0.0.3 255.255.255.0
 
 ip route 0.0.0.0 0.0.0.0 10.0.0.2
-
+</pre>
+## R2 Debugs during NAT
+<pre>
 R2# debug ip nat 1
 IP NAT debugging is on for access list 1
 
