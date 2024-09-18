@@ -22,7 +22,11 @@
 
 Based on a diagram [here.](https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/13772-12.html)
 
-# Basic NAT Setup
+# NAT Overload - Port Address Translation or PAT
+
+This is Source NAT.[^source] 
+
+Packets to R3 will appear to be from `10.0.0.2`
 
 <pre>
           192.168.0.0/24             10.0.0.0/24        
@@ -64,6 +68,8 @@ interface Ethernet0/1
 ip route 0.0.0.0 0.0.0.0 10.0.0.2
 </pre>
 ## R2 Debugs during NAT
+Performed with the above configs via [CML](https://developer.cisco.com/modeling-labs/) IOL routers version 17.12.1.
+
 <pre>
 R2# debug ip nat 1
 IP NAT debugging is on for access list 1
@@ -78,3 +84,5 @@ R2# show ip nat translations
 Pro Inside global      Inside local       Outside local      Outside global
 icmp 10.0.0.2:1024     192.168.1.1:5      10.0.0.3:5         10.0.0.3:1024
 </pre>
+
+[^source]: Source NAT, because the source address needs to be changed to access outside hosts. As packets move through the router, they will create entries for return packets.
