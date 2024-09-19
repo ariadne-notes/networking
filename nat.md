@@ -1,6 +1,6 @@
-* **SA** - Source Address
+SA = Source Address
 
-* **DA** - Destination Adress
+DA = Destination Adress
 
 ```
                       INSIDE NETWORK                                   OUTSIDE NETWORK
@@ -26,22 +26,22 @@ Based on a diagram [here.](https://www.cisco.com/c/en/us/support/docs/ip/network
 
 <pre>
           192.168.0.0/24             10.0.0.0/24        
-┌────┐.1                 .2┌────┐.2             .1┌────┐
-│ R1 │─────────────────────│ R2 │─────────────────│ R3 │
-└────┘E0/0             E0/0└────┘E0/1         E0/1└────┘
-                           ▲    ▲                       
-                           │    │                       
-           Inside ─────────┘    └─────── Outside        
++----+.1                 .2+----+.2             .1+----+
+| R1 +---------------------+ R2 +-----------------+-R3 |
++----+E0/0             E0/0+----+E0/1         E0/1+----+
+                           ^    ^                       
+                           |    |                       
+           Inside ---------+    +------- Outside 
 </pre>           
 
-### R1
+### hostname R1
 <pre>
 interface Ethernet0/0
  ip address 192.168.1.1 255.255.255.0
 
 ip route 0.0.0.0 0.0.0.0 192.168.1.2
 </pre>
-### R2
+### hostname R2
 <pre>
 interface Ethernet0/0
  ip address 192.168.1.2 255.255.255.0
@@ -56,15 +56,13 @@ ip nat inside source list 1 interface Ethernet0/1 overload
 ip access-list standard 1
  10 permit 192.168.1.0 0.0.0.255
 </pre>
-### R3
+### hostname R3
 <pre>
 interface Ethernet0/1
  ip address 10.0.0.3 255.255.255.0
 
 ip route 0.0.0.0 0.0.0.0 10.0.0.2
-</pre>
-## R2 Debugs during NAT
-<pre>
+
 R2# debug ip nat 1
 IP NAT debugging is on for access list 1
 
@@ -77,4 +75,3 @@ IP NAT debugging is on for access list 1
 R2# show ip nat translations
 Pro Inside global      Inside local       Outside local      Outside global
 icmp 10.0.0.2:1024     192.168.1.1:5      10.0.0.3:5         10.0.0.3:1024
-</pre>

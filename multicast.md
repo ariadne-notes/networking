@@ -41,6 +41,7 @@ PIM has five modes:
 
 ## PIM Dense Mode
 Based on RFC 3973 Protocol Independent Multicast Dense Mode (PIM-DM)
+- Useful when you know every subnet needs this multicast group
 - Push or Implicit Join
   - Flood and Prune
   - Doesn't care about Designated Routers

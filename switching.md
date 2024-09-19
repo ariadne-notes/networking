@@ -16,6 +16,35 @@ switch(config)# spanning-tree vlan 60 priority ?
   32768 36864 40960 45056 49152 53248 57344 61440
 ```
 
+## Path Cost
+
+The root bridge BPDU gets stuff tack'd onto it. The root bridge advertises itself as `0` cost.
+
+Cost is the value of the link, towards the root bridge.
+
+<pre>
+ ┌───────┐                                                                    
+ │  SW1  │                                                                    
+ └───┬───┘                                                                    
+     │                                                                        
+     │                                                                        
+     │  Cost in BPDU is 0                                                     
+     │                                                                        
+Eth0 │ ◄─────────────  Interface is Assigned a cost of 100 based on link Speed
+ ┌───┴───┐                                                                    
+ │  SW2  │                                                                    
+ └───┬───┘                                                                    
+Eth1 │                                                                        
+     │                                                                        
+     │   Cost in BPDU on-the-wire is now 100, SW2 Eth0 Cost                   
+     │                                                                        
+Eth0 │                                                                        
+ ┌───┴───┐                                                                    
+ │  SW2  │                                                                    
+ └───────┘                                                                    
+</pre>
+
+
 ## Portfast
 For end Hosts
 
