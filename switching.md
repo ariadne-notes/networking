@@ -28,9 +28,9 @@ Cost is the value of the link, towards the root bridge.
  └───┬───┘                                                                    
      │                                                                        
      │                                                                        
-     │  Cost in BPDU is 0                                                     
+     │  Cost in BPDU from SW1 is 0                                                     
      │                                                                        
-Eth0 │ ◄─────────────  Interface is Assigned a cost of 100 based on link Speed
+Eth0 │ ◄──── Interface is Assigned a cost of 100 by SW2 based on link Speed
  ┌───┴───┐                                                                    
  │  SW2  │                                                                    
  └───┬───┘                                                                    
