@@ -1,0 +1,16 @@
+[Assured Forwarding PHB Group](https://datatracker.ietf.org/doc/html/rfc2597)
+
+Four AF classes, each should get it's own resources.
+
+AF11 (DSCP 10) 001010
+AF12 (DSCP 12) 001100 
+AF13 (DSCP 14) 001110 	
+AF21 (DSCP 18) 010010
+AF22 (DSCP 20) 010100
+AF23 (DSCP 22) 010110 	
+AF31 (DSCP 26) 011010 
+AF32 (DSCP 28) 011100 
+AF33 (DSCP 30) 011110 		
+AF41 (DSCP 34) 100010
+AF42 (DSCP 36) 100100
+AF43 (DSCP 38) 100110 
