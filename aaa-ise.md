@@ -8,4 +8,5 @@
 ### TACACS+ Flows
 
 ![tacacs-plus-authentication-flows](./images/tacacs-plus-authentication-flows.png)
+![tacacs-plus-auth-and-accounting-flows](./images/tacacs-plus-auth-and-accounting-flows.png)
 
