@@ -1,3 +1,8 @@
+# Commands
+`show chassis detail`
+
+`show chassis rmi`
+
 # Lightweight Modes
 
 ## Client-Serving AP Modes
