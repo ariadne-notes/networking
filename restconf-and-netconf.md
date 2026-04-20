@@ -17,13 +17,13 @@ conf t
 ip http secure-server
 ```
 
-1. Turn on RESTCONF
+2. Turn on RESTCONF
 ```
 conf t
 restconf
 ```
 
-1. Validate
+3. Validate
 
 RESTCONF relies on DMI and nginx
 ```
@@ -98,13 +98,13 @@ ariadne@tesseract:~$ curl --insecure --user admin:cisco123 \
 
 1. Ensure a Valid user with AAA new-model is turned on, and available (see above)
 
-1. Turn on NETCONF-YANG
+2. Turn on NETCONF-YANG
 ```
 conf t
 netconf-yang
 ```
 
-1. Validate
+3. Validate
 ```
 restconf-router#show netconf-yang status 
 netconf-yang: enabled
@@ -114,27 +114,27 @@ netconf-yang candidate-datastore: disabled
 
 I performed this lab inside a linux virtual environment.
 
-1. Load a python virtual environment
+4. Load a python virtual environment
 ```
 python3 -m venv ~/netconf-lab
 ```
 
-1. Activate it
+5. Activate it
 ```
 source ~/netconf-lab/bin/activate
 ```
 
-1. Install ncclient
+6. Install ncclient
 ```
 pip install ncclient
 ```
 
-1. Enter the python shell
+7. Enter the python shell
 ```
 python
 ```
 
-1. Connect to device:
+8. Connect to device:
 ```
 >>> conn = manager.connect(
     host="192.168.52.199",
@@ -146,7 +146,7 @@ python
 )
 ```
 
-1. Paste in a payload, follow the XML
+9. Paste in a payload, follow the XML
 ```
 >>> payload = """
 <config>
