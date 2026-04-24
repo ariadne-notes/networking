@@ -1,9 +1,19 @@
 # Terms
 
-* **Multicast:** A one-to-many service using UDP packets destined to group IP address. Hosts subscribe to the group, routers replicate to the group.
-* **MDT:** Multicast Distribution Tree. The tree starts at the source, and branches out to reach all the destinations that want to receive the packets.
+* **Multicast:** A one-to-many service using UDP packets destined to group IP address. Hosts subscribe to the group, routers replicate for the group.
 * **IGMP:** Internet Group Management Protocol. A host uses IGMP to request a multicast stream. Switches see it (for snooping), and the FHR uses this to build the MDT.
 * **PIM:** Protocol Independent Multicast. Multicast capable routers communicate to each over via PIM.
+* **FHR:** First hop router. This router gets the IGMP messages.
+* **IIL:** Incoming Interface List, part of the MDT.
+* **OIL:** Outgoing Interface List, part of the MDT.
+* **MDT:** Multicast Distribution Tree. The full set of links participating in multicast, via PIM, IGMP, including IILs, and OILs.
+* **RP:** Rendezvous Point. A router designated as the root of a shared tree.
+* **(*,G):** Star comma Gee. AKA, a shared tree. These require a RP. Called Star comma Gee, because typing "show ip mroute" ... this is what shows up.
+* **(S,G):** Ess comma Gee. AKA a source tree. These do not require a RP.
+* **Source Tree:** AKA, SPT, or shortest path tree. SPT is best tree.
+* **ASM:** Any Source Multicast. The host only knows the group it wants to receive (239.10.10.10).
+* **SSM:** Source Specific multicast. The host already knows the source, and group address (10.0.0.1, 232.10.10.10).
+
 
 ## Theory (in v4)
 
@@ -43,6 +53,7 @@ mDNS               | 224.0.0.251
 **Can be forwarded**
 
 Protocol           | Multicast Address
+--------------     | --------------
 ntp                | 224.0.1.1
 cisco-rp-announce  | 224.0.1.39
 cisco-rp-discovery | 224.0.1.40
@@ -54,28 +65,47 @@ PIM forms adjacencies in only one direction
 
 The multicast source is the root of the tree. Packets flow downstream from the source. Control plane traffic like PIM joins flow upstream to the RP, or to the reciever.
 
-# PIM
-PIM has five modes:
-* PIM Dense (PIM-DM) - Any Source
-* PIM Sparse (PIM-SM) - Any Source
-* PIM Sparse Dense
-* PIM Source Specific (PIM-SSM)
-* PIM Bidirectional (Bidir-PIM)
 
-## PIM Dense Mode
+ 
+
+
+Protocol           | Multicast Address
+--------------     | --------------
+all-hosts          | 224.0.0.1
+all-routers        | 224.0.0.2
+OSPF-hello         | 224.0.0.5
+OSPF-DR            | 224.0.0.6
+RIPv2              | 224.0.0.9
+EIGRP              | 224.0.0.10
+PIM                | 224.0.0.13
+mDNS               | 224.0.0.251
+
+
+# PIM
+
+
+PIM Mode             | Full Name             | How it works
+---------------------|-----------------------|------------------------------------------------------
+PIM-DM               | Dense Mode            | No RP. Floods everywhere, routers send prune messages to un-join.
+PIM-SM               | Sparse Mode           | Needs a RP.
+PIM Sparse-Dense     | Sparse-Dense Mode     | Runs sparse for groups with a known RP, dense for groups without. Legacy transitional mode.
+Bidir-PIM            | Bidirectional         | Shared tree only, traffic flows both toward and away from RP. No SPT switchover. Good for many-to-many applications.
+PIM-SSM              | Source Specific       | No RP. Receiver specifies both source and group (S,G).
+
+## Dense
 Based on RFC 3973 Protocol Independent Multicast Dense Mode (PIM-DM)
 - Useful when you know every subnet needs this multicast group
 - Push or Implicit Join
   - Flood and Prune
   - Doesn't care about Designated Routers
-  - Routers with no Recievers prune
+  - Routers with no Receivers prune
   - `224.0.0.13` to find neighbors
   - Send traffic out all interfaces running dense
-  - Recievers prune back
+  - Receivers prune back
   - Router attached to LAN listens for multicast control plane.
-     - Recieves source traffic
+     - Receives source traffic
        - Insert (*,G) and (S,G) into mrib
-       - Incomming traffic is attached to IIL
+       - Incoming traffic is attached to IIL
        - OIL is all other interfaces
        - Flood to OIL
        - PIM dense always uses SPT.
@@ -99,6 +129,7 @@ Based on RFC 3973 Protocol Independent Multicast Dense Mode (PIM-DM)
 - Perform mrib maintainance
 
 #### Shared-Tree (*,G)
+Based on RFC4601 - Protocol Independent Multicast Sparse Mode (PIM-SM)
 - PIM Sparse
   - A single tree is built for each group, regardless of source
     - 3 sources, 1 tree
