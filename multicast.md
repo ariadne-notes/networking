@@ -3,7 +3,6 @@
 * **Multicast:** A one-to-many service using UDP packets destined to group IP address. Hosts subscribe to the group, routers replicate for the group.
 * **IGMP:** Internet Group Management Protocol. A host uses IGMP to request a multicast stream. Switches see it (for snooping), and the FHR uses this to build the MDT.
 * **PIM:** Protocol Independent Multicast. Multicast capable routers communicate to each over via PIM.
-* **FHR:** First hop router. This router gets the IGMP messages.
 * **IIL:** Incoming Interface List, part of the MDT.
 * **OIL:** Outgoing Interface List, part of the MDT.
 * **MDT:** Multicast Distribution Tree. The full set of links participating in multicast, via PIM, IGMP, including IILs, and OILs.
@@ -11,15 +10,42 @@
 * **(*,G):** Star comma Gee. AKA, a shared tree. These require a RP. Called Star comma Gee, because typing "show ip mroute" ... this is what shows up.
 * **(S,G):** Ess comma Gee. AKA a source tree. These do not require a RP.
 * **Source Tree:** AKA, SPT, or shortest path tree. SPT is best tree.
+* **RPT:** Rendezvous Point Tree, this is a *,G that points towards the RP.
 * **ASM:** Any Source Multicast. The host only knows the group it wants to receive (239.10.10.10).
 * **SSM:** Source Specific multicast. The host already knows the source, and group address (10.0.0.1, 232.10.10.10).
+* **Upstream:** Towards the source.
+* **Downstream:** Towards group members.
+* **FHR:** First hop router. This router receives a multicast stream.
+* **LHR:** Last Hop router receives IGMP messages from receivers, which are translated into PIM join messages.
+* **MRIB:** The multicast routing table. Shows RPTs, SPTs, RPFIs, OILs, and IILs.
+* **MFIB:** The forwarding table. This is used for programming the hardware.
+* **RIB:** Routing Information Base
 
+# Harder Terms
+
+### RPF - Reverse Path Forwarding
+
+PIM is protocol independent, in the sense, that if a stream turns on, it must have a source, so it takes the form (10.0.0.1, 239.1.1.1), a (S,G).
+
+If we do `show ip route 10.0.0.1`, we'll see the interface the router intends to send any traffic towards that source address. This is the "upstream" interface.
+
+As multicast traffic flows from 10.0.0.1, it should flow into the upstream interface, and out of any downstream interfaces (the OIL).
+
+Tracing the traffic back to the source this way is called "reverse path forwarding" and the interface along this path is the RPF.
+
+The PIM neighbor on the RPF is called the RPF neighbor.
+
+Any multi-cast traffic from any given source, not received on the RPF is discarded. This prevents loops.
+
+
+## Shared Trees
+(*,G) entries in the mroute table require fewer resources, since multiple sources can use the same tree.
+
+(*,G) entries in the mroute table represent a security risk, because any source can send to this shared tree.
 
 ## Theory (in v4)
 
-Multicast is always TO a group not FROM a group. 
-
-A multicast group is a destination, or a set of destinations.
+Multicast is always TO a group, a destination, or a set of destinations.
 
 Multicast comes from an older time. Unlike Unicast addresses, you can tell via bits if a v4 address is multicast.
 
@@ -66,9 +92,6 @@ PIM forms adjacencies in only one direction
 The multicast source is the root of the tree. Packets flow downstream from the source. Control plane traffic like PIM joins flow upstream to the RP, or to the reciever.
 
 
- 
-
-
 Protocol           | Multicast Address
 --------------     | --------------
 all-hosts          | 224.0.0.1
@@ -83,18 +106,36 @@ mDNS               | 224.0.0.251
 
 # PIM
 
-
 PIM Mode             | Full Name             | How it works
 ---------------------|-----------------------|------------------------------------------------------
-PIM-DM               | Dense Mode            | No RP. Floods everywhere, routers send prune messages to un-join.
-PIM-SM               | Sparse Mode           | Needs a RP.
+PIM-DM               | Dense Mode            | No RP. Floods everywhere, routers send prune messages to un-join. Assumes everyone wants the traffic.
+PIM-SM               | Sparse Mode           | Complex. Requires a RP, RP Discovery, and phases. Uses register messages, and both tree types.
 PIM Sparse-Dense     | Sparse-Dense Mode     | Runs sparse for groups with a known RP, dense for groups without. Legacy transitional mode.
 Bidir-PIM            | Bidirectional         | Shared tree only, traffic flows both toward and away from RP. No SPT switchover. Good for many-to-many applications.
 PIM-SSM              | Source Specific       | No RP. Receiver specifies both source and group (S,G).
 
+
+## PIM Message Types
+ Type | Message Type               | Destination                       | Purpose
+------|----------------------------|-----------------------------------|------------------------------------------------------
+ 0    | Hello                      | 224.0.0.13 (all PIM routers)      | Establish adjacency, negotiate parameters.
+ 1    | Register                   | RP address (unicast)              | First-hop router notifies RP of new source, encapsulates multicast data until SPT is built.
+ 2    | Register stop              | First-hop router (unicast)        | RP tells first-hop router to stop sending Register messages.
+ 3    | Join/prune                 | 224.0.0.13 (all PIM routers)      | Join or prune a multicast tree, either (*,G) toward RP or (S,G) toward source.
+ 4    | Bootstrap                  | 224.0.0.13 (all PIM routers)      | BSR floods RP-set information throughout the domain so all routers know candidate RPs.
+ 5    | Assert                     | 224.0.0.13 (all PIM routers)      | Elect a single forwarder on a multi-access segment when duplicate traffic is detected.
+ 8    | Candidate RP advertisement | Bootstrap router (BSR) (unicast)  | Candidate RPs advertise themselves to the BSR.
+ 9    | State refresh              | 224.0.0.13 (all PIM routers)      | PIM-DM only. Prevents prune state from timing out and triggering a re-flood.
+ 10   | DF election                | 224.0.0.13 (all PIM routers)      | Bidir-PIM only. Elects a Designated Forwarder per link to forward traffic toward the RP.
+ 
+ 
+
+
 ## Dense
 Based on RFC 3973 Protocol Independent Multicast Dense Mode (PIM-DM)
 - Useful when you know every subnet needs this multicast group
+- Eventually builds a (S,G) after prunes
+- Prunes last 3 minutes
 - Push or Implicit Join
   - Flood and Prune
   - Doesn't care about Designated Routers
@@ -119,23 +160,42 @@ Based on RFC 3973 Protocol Independent Multicast Dense Mode (PIM-DM)
   - Flood again, prune back, flood again, prune back
   
 ## PIM Sparse
-- Discover PIM neighbors
-- Discover the RP
-- Tell RP about the source
-- Tell RP about recievers 
-- Build shortest path tree from sender to recievers through RP
-- Join shortest path tree
-- Leave shared tree
-- Perform mrib maintainance
+Based on RFC4601 - Protocol Independent Multicast Sparse Mode (PIM-SM)
+- Explicit joins everywhere. No flooding.
+- LHR, sends a PIM-Join towards the RP, building a (*,G).
+- Phased
+  - 1. The RPT tree
+    - Receivers sending their (*,G) messages towards the RP.
+    - FHR encapsulates the multicast traffic directly towards the RP.
+    - PIM-Register
+    - RP de-encapsulates the traffic, sending it down the RPT.
+  - 2. Register Stop
+    - The RP sends a (S,G) towards the source.
+    - When multicast packets start showing up, without encapsulation, the RP sends a Register-Stop.
+  - 3. SPT tree
+    - LHR requests a (S,G) entry towards it's upstream, until it's joined to the (S,G) tree.
+    - When the LHR starts getting two copies of the traffic, it sends a (S,G,rpt) prune message. (A prune specific to the RPT)
+- If two LHRs exist, and duplicate traffic is detected a PIM elections happens.
+  - These Asserts are every 3 minutes.
+  - RPTbit, 0 is preferred and means "has (S,G) tree"
+    - Metric Preference (Administrative Distance)
+      - Metric
+        - IP address of subnet interface.
+  
+  
+
+a DR is elected by highest priority, or highest IP in the subnet.
+  - DR sends the PIM join upstream.
+
+The RP always gets the stream, even if it has no receivers to forward it to.
 
 #### Shared-Tree (*,G)
-Based on RFC4601 - Protocol Independent Multicast Sparse Mode (PIM-SM)
 - PIM Sparse
   - A single tree is built for each group, regardless of source
     - 3 sources, 1 tree
   - Selects a router as the root of the tree [Rendezvous Point]
   - Multicast sources not on the shared tree encapsulate their data to the RP, which de-encapsulates it, then flows down the tree
-  - If a reciever is on the same subnet as the sending host, it will need to revert to PIM Dense for that segment
+  - If a receiver is on the same subnet as the sending host, it will need to revert to PIM Dense for that segment
   - Shared trees are essential for multiple senders to the same group
   - This isn't always better. Shared trees will typically take suboptimal paths through a network
   - Source trees are better distributed, hence they are more robust
@@ -155,11 +215,11 @@ Based on RFC4601 - Protocol Independent Multicast Sparse Mode (PIM-SM)
 
 `show pim topology`
 
-`show ip mroute`
-
-`show mrib route summary`
+`show mrib route`
 
 #### IOS
+`show ip mroute`
+
 `show ip rpf`
 
 `show ip mfib`
