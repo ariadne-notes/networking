@@ -20,6 +20,7 @@
 * **MRIB:** The multicast routing table. Shows RPTs, SPTs, RPFIs, OILs, and IILs.
 * **MFIB:** The forwarding table. This is used for programming the hardware.
 * **RIB:** Routing Information Base
+* **DF:** Designated Forwarder. Used in PIDIR-PIM.
 
 # Harder Terms
 
@@ -185,15 +186,17 @@ All possible debugging has been turned off
 
 ## Dense
 Based on RFC 3973 Protocol Independent Multicast Dense Mode (PIM-DM)
-- Useful when you know every subnet needs this multicast group
-- Eventually builds a (S,G) after prunes
+- Push Model
+  - Good for when every subnet probably wants this traffic
+- No PIM DR
+  - All FHR forward multicast traffic
+    - Multicast traffic is flooded out every interface that isn't the RPF.
+- Eventually builds a SPT after prunes
+- IGMP joins turn into graft messages
 - Prunes last 3 minutes
-- Push or Implicit Join
   - Flood and Prune
-  - Doesn't care about Designated Routers
-  - Routers with no Receivers prune
+  - Routers with no Receivers or duplicate S,G traffic prune.
   - `224.0.0.13` to find neighbors
-  - Send traffic out all interfaces running dense
   - Receivers prune back
   - Router attached to LAN listens for multicast control plane.
      - Receives source traffic
@@ -243,26 +246,47 @@ a DR is elected by highest priority, or highest IP in the subnet.
 
 The RP always gets the stream, even if it has no receivers to forward it to.
 
+## BIDIR-PIM 
+Based on RFC 4601 - Bidirectional Protocol Independent Multicast (BIDIR-PIM)
+- Superset of PIM-SM
+- No (S,G) entries
+- Traffic can flow up and down the same tree.
+- Still needs RPs
+  - RP must be dedicated to BIDIR-PIM.
+- Each bidirectional link has a DF election.
+  - Ingress packets on any PIM interface can be forwarded downstream onto DF links.
+    - No DF links, no forwarding.
+  - Ingress packets to a DF can be forwarded upstream via the RPF towards the RPA.
+  
+## MSDP
+- RPs register to each other, in different multicast domains.
+- RP sends a SA (source active) message.
+- Still needs PIM running for the S,G.
+- TCP port 639.
+- Has keepalives.
+
+`show ip msdp peer`
+`show ip msdp sa-cache`
+
+
 #### Shared-Tree (*,G)
-- PIM Sparse
-  - A single tree is built for each group, regardless of source
-    - 3 sources, 1 tree
-  - Selects a router as the root of the tree [Rendezvous Point]
-  - Multicast sources not on the shared tree encapsulate their data to the RP, which de-encapsulates it, then flows down the tree
-  - If a receiver is on the same subnet as the sending host, it will need to revert to PIM Dense for that segment
-  - Shared trees are essential for multiple senders to the same group
-  - This isn't always better. Shared trees will typically take suboptimal paths through a network
-  - Source trees are better distributed, hence they are more robust
-  - RP Selection is a hassle
+- Shared trees are essential for multiple senders to the same group
+- A single tree is built for each group, regardless of source
+  - 3 sources, 1 tree
+- Selects a router as the root of the tree
+- If a receiver is on the same subnet as the sending host, it will need to revert to PIM Dense for that segment
+
+- This isn't always better. Shared trees will typically take suboptimal paths through a network
+- Source trees are better distributed, hence they are more robust
+- RP Selection is a hassle
 
 #### Source Based Multicast (S,G)
-- PIM dense uses a seperate tree for each multicast source and destination group.
+- PIM dense uses a separate tree for each multicast source and destination group.
 - Groups do not share trees.
   - 3 Sources 3 trees.
 
 ## Commands
 
-#### IOS-XR
 `show pim rpf hash`
 
 `show pim range-list`
@@ -273,9 +297,26 @@ The RP always gets the stream, even if it has no receivers to forward it to.
 
 `show ip mroute`
 
-`show ip rpf`
+What interface should I receive this host traffic from?
+
+`show ip rpf 10.0.0.`
 
 `show ip mfib`
+
+See if multicast even works
+
+`show ip pim stats`
+
+See if PIM adjacency traffic even arrives.
+
+`show ip pim interface detail`
+
+See results of DF election
+
+`show ip pim interface df`
+
+
+
 ```
 FLAGS
  A - Accepting. This interface is accepting data
@@ -387,6 +428,10 @@ Address           Octet 1    Octet 2    Octet 3    Octet 4
 
 
 # Lab Stuff.
+
+BPF - Capture all PIM, but not PIM hello messages.
+
+`ip proto 103 and not ether[34] == 0x20`
 
 ### Sending Multicast
 
