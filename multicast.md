@@ -229,7 +229,7 @@ Based on [RFC4601](https://www.rfc-editor.org/rfc/rfc4601) - Protocol Independen
     - When multicast packets start showing up, without encapsulation, the RP sends a Register-Stop.
   - 3. [SPT tree](https://www.rfc-editor.org/rfc/rfc4601#section-3.3)
     - LHR requests a (S,G) entry towards it's upstream, until it's joined to the (S,G) tree.
-    - When the LHR starts getting two copies of the traffic, it sends a (S,G,rpt) prune message. (A prune specific to the RPT)
+    - When the LHR starts getting two copies of the traffic, it sends a (S,G,rpt) prune message, towards the RP. (A prune specific to the RPT)
 - If two LHRs exist, and duplicate traffic is detected a PIM elections happens.
   - These Asserts are every 3 minutes.
   - RPTbit, 0 is preferred and means "has (S,G) tree"
