@@ -239,7 +239,7 @@ Based on [RFC4601](https://www.rfc-editor.org/rfc/rfc4601) - Protocol Independen
 - Specify the tunnel, for the pim-register messages on Cisco via `ip pim register-source loopback 0`
 - The tunnel interface encapsulates the entire multicast packet, which adds 28 bytes of overhead. Packets close to the MTU will be silently dropped on IOS-XE.
 
-[PIM-SM-register-and-register-stop-prune.pcap](/captures/multicast/PIM-SM-register-and-register-stop-prune.pcap)
+[PIM-SM-register-register-stop-prune.pcap](https://github.com/user/repo/raw/main/captures/multicast/PIM-SM-register-register-stop-prune.pcap)
   
   
 
