@@ -12,8 +12,9 @@ Netflow needs four things to work:
 * Monitors
 * Interfaces
 
-## Record
+### IOS-XE
 
+```
 flow record FLOW_RECORD_IPV4
  match ipv4 protocol
  match ipv4 source address
@@ -26,9 +27,7 @@ flow record FLOW_RECORD_IPV4
  collect counter packets long
  collect timestamp sys-uptime first
  collect timestamp sys-uptime last
-
-## Exporter
-
+!
 flow exporter FLOW_EXPORTER
  !
  ! IPFix is standards based netflow.
@@ -39,21 +38,42 @@ flow exporter FLOW_EXPORTER
  transport udp 2055
  template data timeout 60
 !
-
-## Monitor
-
 flow monitor FLOW_MONITOR_IPV4
  exporter FLOW_EXPORTER
  cache timeout active 60
  record FLOW_RECORD_IPV4
-
-
-## Interfaces
- 
+!
 interface GigabitEthernet1
  ip flow monitor FLOW_MONITOR_IPV4 input
  ip flow monitor FLOW_MONITOR_IPV4 output
- 
+```
+
+### IOS-XR
+
+```
+flow exporter-map EXPORTER_MAP_1
+version v9
+options interface-table
+template data timeout 600
+!
+dscp 48
+transport udp 2055
+source Loopback1
+destination <IP 1>
+!
+flow monitor-map MONITOR_MAP_INTERNET
+  record ipv4
+  exporter EXPORTER_MAP_1
+  cache timeout active 60
+  cache timeout inactive 5
+!
+sampler-map SAMPLER_MAP_INTERNET
+  random 1 out-of 500
+!
+interface ten 1/1
+  flow ipv4 monitor MONITOR_MAP_INTERNET sampler SAMPLER_MAP_INTERNET ingress
+  flow ipv4 monitor MONITOR_MAP_INTERNET sampler SAMPLER_MAP_INTERNET egress
+```
 
 ### Lab validations
 ```
